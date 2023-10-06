@@ -34,7 +34,7 @@ const Start = ({ navigation }) => {
                value={name}
                onChangeText={setName}
                placeholder="Username"
-               placeholderTextColor="#757083"
+               placeholderTextColor="#333"
             />
 
             <Text style={styles.colorSelectText}>Select Background Color :</Text>
@@ -110,8 +110,8 @@ const styles = StyleSheet.create({
    },
    textInput: {
       fontSize: 16,
-      fontWeight: '300',
-      color: '#8A95A5',
+      fontWeight: '400',
+      color: '#333',
       padding: 15,
       borderWidth: 1,
       borderColor: '#757083',
