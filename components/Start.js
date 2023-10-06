@@ -8,19 +8,32 @@ import {
    TouchableOpacity, 
    ScrollView 
 } from 'react-native';
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 const image = require('../assets/Background_Image.png');
 
 const colorOptions = {
-   earthGray: '#A39E93',
+   earthGray:  '#A39E93',
    earthGreen: '#87A96B',
    earthBrown: '#A28474',
-   earthRed: '#D9837E',
+   earthRed:   '#D9837E',
 };
 
 const Start = ({ navigation }) => {
    const [name, setName] = useState(' ');
-   const [color, setColor] = useState(colorOptions.a);
+   const [color, setColor] = useState(colorOptions.earthGray);
+   const auth = getAuth();
+   
+   const signInUser = () => {
+      signInAnonymously(auth)
+         .then(result => {
+            navigation.navigate("Chat", { userId: result.user.uid, name, color:color, });
+            Alert.alert("Signed in");
+         })
+         .catch((error) => {
+            Alert.alert("There was a problem with the sign in. Please try again later.", error);
+         })
+   }
 
    return (
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>         
@@ -76,7 +89,7 @@ const Start = ({ navigation }) => {
 
             <TouchableOpacity
                style={styles.button}
-               onPress={() => navigation.navigate('Chat', { name: name, color: color })}
+               onPress={signInUser}
             >
                <Text style={styles.buttonText}>Start Chat</Text>
             </TouchableOpacity>
@@ -90,7 +103,6 @@ const styles = StyleSheet.create({
    container: {
       flex: 1,
       justifyContent: 'center',
-      backgroundColor: '#F2EFEA',
    },
    image: {
       flex: 1,
@@ -104,23 +116,22 @@ const styles = StyleSheet.create({
       alignSelf: 'center',
    },
    textContainer: {
-      backgroundColor: '#FFFFFF',
       padding: '6%',
       paddingBottom: 20,
    },
    textInput: {
       fontSize: 16,
-      fontWeight: '400',
+      fontWeight: '700',
       color: '#333',
       padding: 15,
-      borderWidth: 1,
+      borderWidth: 5,
       borderColor: '#757083',
       marginTop: 15,
       marginBottom: 15,
    },
    colorSelectText: {
       fontSize: 16,
-      fontWeight: '300',
+      fontWeight: '900',
       color: '#333',
       marginBottom: 10,
    },
@@ -133,6 +144,8 @@ const styles = StyleSheet.create({
       height: 50,
       width: 50,
       borderRadius: 25,
+      borderWidth: 2,
+      borderColor: '#757083'
    },
    selectedCircle: {
       borderWidth: 2,
@@ -141,6 +154,8 @@ const styles = StyleSheet.create({
    button: {
       backgroundColor: '#A1917E',
       padding: 10,
+      borderWidth: 3,
+      borderColor: '#333',
    },
    buttonText: {
       color: '#FFFFFF',

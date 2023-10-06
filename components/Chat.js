@@ -6,27 +6,71 @@ import {
    Platform 
 } from 'react-native';
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import {
+   collection,
+   addDoc,
+   onSnapshot,
+   getDocs,
+} from "firebase/firestore";
 
-const Chat = ({ route, navigation }) => {
-   const { name, color } = route.params;
+const Chat = ({ route, navigation, db }) => {
+   const { name, color, userID } = route.params;
    const [messages, setMessages] = useState([])
 
    const onSend = (newMessages) => {
       setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
    }
 
+   useEffect(() => {
+      const messagesRef = collection(db, "messages");
+      const newMessage = {
+         text: "Hello, Firebase!",
+         createdAt: new Date(),
+         user: {
+            _id: "user_id",
+            name: "John Doe",
+         },
+      };      
+      addDoc(messagesRef, newMessage);
+
+      const unsubMessages = onSnapshot(messagesRef, (querySnapshot) => {
+        const newMessages = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+               _id: doc.id,
+               text: data.text,
+               createdAt: data.createdAt.toDate(),
+               user: {
+                  _id: data.user._id,
+                  name: data.user.name,
+                  avatar: data.user.avatar,
+               },
+            };
+         });
+  
+      newMessages.sort((a, b) => b.createdAt - a.createdAt);
+        setMessages(newMessages);
+      });
+  
+      return () => {
+        if (unsubMessages) unsubMessages();
+      }
+   }, [db]);
+
    const renderBubble = (props) => {
-      return <Bubble
-         {...props}
-         wrapperStyle={{
-            right: {
-               backgroundColor: '#6699A1'
-            },
-            left: {
-               backgroundColor: '#F2EFEA'
-            }
-         }}
-      />
+      return (
+         <Bubble
+            {...props}
+            wrapperStyle={{
+               right: {
+                  backgroundColor: '#6699A1'
+               },
+               left: {
+                  backgroundColor: '#F2EFEA'
+               }
+            }}
+         />
+      )
    }
 
    useEffect(() => {
