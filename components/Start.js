@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, 
+import { 
+   StyleSheet, 
    View, 
    Text, 
    TextInput, 
@@ -8,7 +9,7 @@ import { StyleSheet,
    ScrollView 
 } from 'react-native';
 
-const image = require('../assets/xu2eCuW9-Evon-1440x900.jpg');
+const image = require('../assets/Background_Image.png');
 
 const colorOptions = {
    earthGray: '#A39E93',
