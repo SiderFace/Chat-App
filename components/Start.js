@@ -6,7 +6,8 @@ import {
    TextInput, 
    ImageBackground, 
    TouchableOpacity, 
-   ScrollView 
+   ScrollView,
+   Alert 
 } from 'react-native';
 import { getAuth, signInAnonymously } from "firebase/auth";
 
@@ -23,7 +24,7 @@ const Start = ({ navigation }) => {
    const [name, setName] = useState(' ');
    const [color, setColor] = useState(colorOptions.earthGray);
    const auth = getAuth();
-   
+
    const signInUser = () => {
       signInAnonymously(auth)
          .then(result => {

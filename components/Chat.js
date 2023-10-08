@@ -3,57 +3,47 @@ import {
    StyleSheet, 
    View,  
    KeyboardAvoidingView, 
-   Platform 
+   Platform,
+   Alert 
 } from 'react-native';
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import {
    collection,
    addDoc,
    onSnapshot,
-   getDocs,
+   orderBy,
+   query
 } from "firebase/firestore";
 
 const Chat = ({ route, navigation, db }) => {
-   const { name, color, userID } = route.params;
+   const { name, color, userID, } = route.params;
    const [messages, setMessages] = useState([])
 
    const onSend = (newMessages) => {
-      setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
-   }
+      addDoc(collection(db, "messages"), newMessages[0])
+    }
 
    useEffect(() => {
-      const messagesRef = collection(db, "messages");
-      const newMessage = {
-         text: "Hello, Firebase!",
-         createdAt: new Date(),
-         user: {
-            _id: "user_id",
-            name: "John Doe",
-         },
-      };      
-      addDoc(messagesRef, newMessage);
+      navigation.setOptions({ title: name });
 
-      const unsubMessages = onSnapshot(messagesRef, (querySnapshot) => {
-        const newMessages = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
+      const q = query(
+         collection(db, "messages"), 
+         orderBy("createdAt", "desc")
+      );
+      const unsubMessages = onSnapshot(q, (docs) => {
+        let newMessages = [];
+        docs.forEach(doc => {
+            newMessages.push({
                _id: doc.id,
-               text: data.text,
-               createdAt: data.createdAt.toDate(),
-               user: {
-                  _id: data.user._id,
-                  name: data.user.name,
-                  avatar: data.user.avatar,
-               },
-            };
-         });
-  
-      newMessages.sort((a, b) => b.createdAt - a.createdAt);
-        setMessages(newMessages);
-      });
-  
+               ...doc.data(),
+               createdAt: new Date(doc.data().createdAt.toMillis())
+            })
+         })
+         setMessages(newMessages);
+      })
+
       return () => {
-        if (unsubMessages) unsubMessages();
+         if (unsubMessages) unsubMessages();
       }
    }, [db]);
 
@@ -69,6 +59,7 @@ const Chat = ({ route, navigation, db }) => {
                   backgroundColor: '#F2EFEA'
                }
             }}
+            position={props.currentMessage.user._id === 1 ? 'right' : 'left'}
          />
       )
    }
@@ -111,7 +102,9 @@ const Chat = ({ route, navigation, db }) => {
                _id: 1
             }}
          />
-         { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null }
+         { Platform.OS === 'android' ? (
+            <KeyboardAvoidingView behavior="height" />
+         ) : null}
       </View>
    );
 }
