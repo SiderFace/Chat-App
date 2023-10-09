@@ -48,21 +48,22 @@ const Chat = ({ route, navigation, db }) => {
    }, [db]);
 
    const renderBubble = (props) => {
+      const isCurrentUser = props.currentMessage.user.uid === userID;
+      const backgroundColor = isCurrentUser ? '#CD5C5C' : '#2F4F4F';
+      const position = isCurrentUser ? 'right' : 'left';
+    
       return (
-         <Bubble
-            {...props}
-            wrapperStyle={{
-               right: {
-                  backgroundColor: '#6699A1'
-               },
-               left: {
-                  backgroundColor: '#F2EFEA'
-               }
-            }}
-            position={props.currentMessage.user._id === 1 ? 'right' : 'left'}
-         />
-      )
-   }
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            [position]: {
+              backgroundColor: backgroundColor,
+            },
+          }}
+          position={position}
+        />
+      );
+    };
 
    useEffect(() => {
       navigation.setOptions({ 
@@ -99,8 +100,9 @@ const Chat = ({ route, navigation, db }) => {
             renderBubble={renderBubble}
             onSend={messages => onSend(messages)}
             user={{
-               _id: 1
-            }}
+               _id: route.params.userId,
+               name: route.params.name,
+             }}
          />
          { Platform.OS === 'android' ? (
             <KeyboardAvoidingView behavior="height" />

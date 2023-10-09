@@ -28,10 +28,16 @@ const Start = ({ navigation }) => {
    const signInUser = () => {
       signInAnonymously(auth)
          .then(result => {
+
+            console.log("User UID:", result.user.uid);
+
             navigation.navigate("Chat", { userId: result.user.uid, name, color:color, });
             Alert.alert("Signed in");
          })
          .catch((error) => {
+
+            console.error("Sign-in error:", error);
+            
             Alert.alert("There was a problem with the sign in. Please try again later.", error);
          })
    }
