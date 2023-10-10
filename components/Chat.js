@@ -15,8 +15,8 @@ import {
    query
 } from "firebase/firestore";
 
-const Chat = ({ route, navigation, db }) => {
-   const { name, color, userID, } = route.params;
+const Chat = ({ route, navigation, db, }) => {
+   const { name, color, userId, } = route.params;
    const [messages, setMessages] = useState([])
 
    const onSend = (newMessages) => {
@@ -47,23 +47,29 @@ const Chat = ({ route, navigation, db }) => {
       }
    }, [db]);
 
+   // const bubbleColors = ['#6699A1', '#FF6B6B', '#87A96B', '#D9837E'];
    const renderBubble = (props) => {
-      const isCurrentUser = props.currentMessage.user.uid === userID;
-      const backgroundColor = isCurrentUser ? '#CD5C5C' : '#2F4F4F';
+      const isCurrentUser = props.currentMessage.user._id === userId;
+      const backgroundColor = isCurrentUser ? '#e3d3c5' : '#3b5869';
       const position = isCurrentUser ? 'right' : 'left';
+      const textColor = isCurrentUser ? 'black' : 'white';
     
       return (
-        <Bubble
-          {...props}
-          wrapperStyle={{
-            [position]: {
-              backgroundColor: backgroundColor,
-            },
-          }}
-          position={position}
-        />
+         <Bubble
+            {...props}
+            wrapperStyle={{
+               [position]: {
+               backgroundColor: backgroundColor,
+               },
+            }}
+            position={position}
+            textStyle={{
+               left: { color: textColor }, 
+               right: { color: textColor },
+            }}
+         />
       );
-    };
+   };
 
    useEffect(() => {
       navigation.setOptions({ 
@@ -72,26 +78,27 @@ const Chat = ({ route, navigation, db }) => {
    },[]);
 
    useEffect(() => {
-      setMessages([
-         {
-            _id: 1,
-            text: 'Hello developer',
-            createdAt: new Date(),
-            user: {
-               _id: 2,
-               name: 'React Native',
-               avatar: 'https://placeimg.com/140/140/any',
+      if (messages.length === 0) {
+         setMessages([
+            {
+               _id: 1,
+               text: 'Hello developer',
+               createdAt: new Date(),
+               user: {
+                  _id: 2,
+                  name: 'React Native',
+                  avatar: 'https://placeimg.com/140/140/any',
+               },
             },
-         },
-         {
-            _id: 2,
-            text: `${name} has entered the room}`,
-            createdAt: new Date(),
-            system: true,
-         }
-      ]);
-   },[]);
-  
+            {
+               _id: 2,
+               text: `${name} has entered the room`,
+               createdAt: new Date(),
+               system: true,
+            }
+         ]);
+      }
+   },[messages, name]); 
 
    return (
       <View style={[styles.container, { backgroundColor: color }]}>
@@ -100,8 +107,8 @@ const Chat = ({ route, navigation, db }) => {
             renderBubble={renderBubble}
             onSend={messages => onSend(messages)}
             user={{
-               _id: route.params.userId,
-               name: route.params.name,
+               _id: userId,
+               name: name,
              }}
          />
          { Platform.OS === 'android' ? (
