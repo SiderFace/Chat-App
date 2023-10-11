@@ -9,7 +9,7 @@ import {
    ScrollView,
    Alert 
 } from 'react-native';
-import { getAuth, signInAnonymously } from "firebase/auth";
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 const image = require('../assets/Background_Image.png');
 
