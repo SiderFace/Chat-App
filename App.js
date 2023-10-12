@@ -11,6 +11,8 @@ import {
 import { useEffect } from 'react';
 import { useNetInfo }from '@react-native-community/netinfo';
 import { Alert } from "react-native";
+import { getStorage } from "firebase/storage";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +30,7 @@ const App = () => {
    const connectionStatus = useNetInfo();
    const app = initializeApp(firebaseConfig);
    const db = getFirestore(app);
+   const storage = getStorage(app);
 
    useEffect(() => {
       if (connectionStatus.isConnected === false) {
@@ -54,6 +57,7 @@ const App = () => {
                   db={db} 
                   {...props} 
                   isConnected={connectionStatus.isConnected}
+                  storage={storage}
                />}      
             </Stack.Screen>
          </Stack.Navigator>
